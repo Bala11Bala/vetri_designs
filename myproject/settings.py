@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-23*bvx!bm!(a1f_%)fx-50tml+giad10s8)(fer9hv85$$#0nz
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['vetri-designs.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.onrender.com', 'vetri-designs.onrender.com', 'localhost', '127.0.0.1']
+
 
 
 
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.http.ConditionalGetMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
