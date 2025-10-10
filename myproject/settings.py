@@ -149,14 +149,3 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
-INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dsjetyomg',
-    'API_KEY': '283761113113334',
-    'API_SECRET': 'UDV_8fyjFbQrAbD1zz_WBasymtc',
-}
