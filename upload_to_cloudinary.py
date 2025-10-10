@@ -1,16 +1,15 @@
-# upload_to_cloudinary.py
-
 import os
 import django
 import cloudinary
 import cloudinary.uploader
 from django.conf import settings
 
-# Setup Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
 django.setup()
 
-# Load Cloudinary config from settings
+from myapp.models import ProjectImage, Profile
+
+# Configure Cloudinary (must be set in the script)
 cloudinary.config(
     cloud_name = settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
     api_key = settings.CLOUDINARY_STORAGE['API_KEY'],
@@ -18,11 +17,9 @@ cloudinary.config(
     secure = True
 )
 
-from myapp.models import ProjectImage, Profile
-
-# Upload project images
+# Upload Project Images
 for pi in ProjectImage.objects.all():
-    if pi.image and not str(pi.image).startswith('http'):
+    if pi.image and not str(pi.image).startswith("http"):
         print(f"Uploading {pi.image.name}...")
         result = cloudinary.uploader.upload(
             pi.image.path,
@@ -32,10 +29,11 @@ for pi in ProjectImage.objects.all():
         )
         pi.image = result['secure_url']
         pi.save()
+        print(f"Saved URL: {pi.image}")
 
-# Upload profile images
+# Upload Profile Images
 for profile in Profile.objects.all():
-    if profile.profile_image and not str(profile.profile_image).startswith('http'):
+    if profile.profile_image and not str(profile.profile_image).startswith("http"):
         print(f"Uploading {profile.profile_image.name}...")
         result = cloudinary.uploader.upload(
             profile.profile_image.path,
@@ -45,5 +43,6 @@ for profile in Profile.objects.all():
         )
         profile.profile_image = result['secure_url']
         profile.save()
+        print(f"Saved URL: {profile.profile_image}")
 
-print("All existing images uploaded to Cloudinary!")
+print("✅ All existing images uploaded to Cloudinary!")
