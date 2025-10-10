@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-23*bvx!bm!(a1f_%)fx-50tml+giad10s8)(fer9hv85$$#0nz
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['vetri-designs.onrender.com', 'localhost', '127.0.0.1']
+
 
 
 
