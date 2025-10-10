@@ -1,0 +1,500 @@
+{% extends 'myapp/layouts/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block extra_css %}
+<style>
+  .btn-pink {
+    background: #ff0080;
+    color: #fff;
+    border-radius: 25px;
+    padding: 8px 16px;
+  }
+
+  .btn-pink:hover {
+    background: #e60073;
+    color: #fff;
+  }
+
+  .stat-card {
+    background: #fefcfb;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-card h3 {
+    font-weight: bold;
+  }
+
+  .main-content {
+    min-height: 100vh;
+    width: 75%;
+    margin-top: 50px;
+  }
+
+
+  .card-custom {
+    background-color: #fffde7;
+    /* light yellow */
+    border: 1px solid #ff007a;
+    border-radius: 12px;
+  }
+
+  .upload-box {
+    border: 2px dashed #ff007a;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    background: #fff;
+  }
+
+  .btn-pink {
+    background-color: #ff007a;
+    color: #fff;
+    border-radius: 50px;
+  }
+
+  .btn-pink:hover {
+    background-color: #e6006e;
+    color: #fff;
+  }
+
+  .messages-card {
+    border: 1px solid #ff007a;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .message-user {
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .message-time {
+    font-size: 0.8rem;
+    color: #888;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .btn-gradient {
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+.btn-gradient:hover {
+  opacity: 0.8;
+}
+
+</style>
+<!-- Hover effect -->
+<style>
+.project-card:hover .overlay {
+  opacity: 1;
+}
+</style>
+
+{% endblock extra_css %}
+
+
+{% block title %}
+{% endblock title %}
+
+
+{% block content %}
+<div class="main-content" style="margin-left:21%; padding:20px;">
+
+  {% if is_admin %}
+
+  <!-- Topbar -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-pink d-flex align-items-center">
+        <i class="fa fa-search me-2"></i> Search the designers
+      </button>
+    </div> -->
+<form method="get" class="d-flex align-items-center gap-2 mb-3">
+  <input 
+    type="text" 
+    name="student_name" 
+    value="{{ search_name|default:'' }}" 
+    class="form-control" 
+    placeholder="Search by Student Name"
+  >
+  <button type="submit" class="btn btn-pink d-flex align-items-center">
+    <i class="fa fa-search me-2"></i> Search
+  </button>
+</form>
+
+
+    <!-- <button class="btn btn-danger rounded-pill px-4">Share Your Work</button> -->
+     <h4> Welcome..! <span style="color: #ff0080;">{{ user }}😊</span></h4>
+
+    <div class="d-flex align-items-center gap-4">
+<div class="position-relative me-3">
+  <a href="{% url 'all_messages' %}" class="text-dark text-decoration-none">
+    <i class="fa fa-bell fs-4"></i>
+    {% if unread_count > 0 %}
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{ unread_count }}
+      </span>
+    {% endif %}
+  </a>
+</div>
+      <i class="fa fa-envelope fs-4"></i>
+      <img src="{% static 'images/vts companies logo.jpg' %}" class="rounded-circle" width="50" height="50">
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+ <div class="row g-5 justify-content-center">
+  <div class="col-md-3">
+    <div class="stat-card text-center p-3 border rounded shadow-sm">
+      <p class="fw-bold">Total Projects 📁</p>
+      <h3>{{ total_projects }}</h3>
+      <small class="text-success">All Uploaded Projects</small>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="stat-card text-center p-3 border rounded shadow-sm">
+      <p class="fw-bold">Candidates 👥</p>
+      <h3>{{ total_students }}</h3>
+      <small class="text-success">Active Students</small>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="stat-card text-center p-3 border rounded shadow-sm">
+      <p class="fw-bold">Notifications 🔔</p>
+      <h3>{{ total_notifications }}</h3>
+      <small class="text-info">Messages & Inquiries</small>
+    </div>
+  </div>
+</div>
+
+
+
+   <!-- Recent Messages -->
+<!-- 📨 Recent Messages -->
+<div class="col-lg-8 mx-auto my-5">
+  <div class="messages-card p-3 shadow-sm rounded-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="fw-bold mb-0">Recent Messages</h6>
+      <a href="{% url 'all_messages' %}" class="text-decoration-none text-primary fw-semibold">View All</a>
+    </div>
+
+    {% for msg in recent_messages %}
+      <div class="d-flex align-items-start mb-3">
+        <img src="{{ msg.sender.profile.profile_image.url }}" class="avatar me-3 rounded-circle" width="40" height="40" alt="{{ msg.sender.username }}">
+        <div>
+          <div class="fw-semibold">{{ msg.sender.username }}</div>
+          <div class="text-muted small">{{ msg.content|truncatechars:60 }}</div>
+          <div class="text-muted small">{{ msg.created_at|naturaltime }}</div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">No recent messages.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="container py-4">
+  <h4 class="fw-bold mb-4">Designers Showcase</h4>
+  <div class="row g-4" >
+    {% for student, projects in student_projects.items %}
+      {% if projects %}
+        <div class="col-md-4">
+          <div class="card shadow-sm rounded-4 overflow-hidden position-relative project-card"
+               style="cursor:pointer;border: 1px solid #e6006e;"
+               onclick="window.location.href='{% url 'view_student_projects' student.id %}'"  >
+            
+            <!-- Show the first project's image -->
+            {% if projects.0.images.first %}
+              <img src="{{ projects.0.images.first.image.url }}" class="w-100" style="height:220px; object-fit:cover;">
+            {% else %}
+              <div style="height:220px; background:#ddd;"></div>
+            {% endif %}
+
+            <!-- Overlay -->
+            <div class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-white text-center p-3"
+                 style="background:rgba(0,0,0,0.6); opacity:0; transition:0.3s;">
+              <h6 class="fw-bold mb-2">{{ projects.0.title }}</h6>
+              <p class="small">{{ projects.0.description|truncatechars:100 }}</p>
+            </div>
+
+            <!-- Student Info -->
+            <div class="p-3 text-center" style="background: linear-gradient(270deg, #FFA44B, #FF0488 );">
+              <img src="{{ student.profile_image.url }}" class="rounded-circle border border-3 border-white mb-2" width="60" height="60">
+              <h6 class="fw-bold mb-0 text-white">{{ student.first_name }} {{ student.last_name }}</h6>
+              <p class="small text-light   mb-1">{{ student.location }}</p>
+            </div>
+
+            <div class="btn mt-2 text-white" style="background: linear-gradient(270deg, #FFA44B, #FF0488 ); width: 250px; margin: auto;"> Show Profile </div>
+
+
+            <!-- Recent 3 Project Thumbnails -->
+            <!-- <div class="d-flex justify-content-center p-2 bg-white ">
+              {% for p in projects %}
+                {% if p.images.first %}
+                  <img src="{{ p.images.first.image.url }}" class="rounded me-1" width="50" height="50" style="object-fit:cover;">
+                {% endif %}
+              {% endfor %}
+            </div> -->
+
+          </div>
+        </div>
+      {% endif %}
+    {% empty %}
+      <p class="text-center">No students found.</p>
+    {% endfor %}
+  </div>
+</div>
+
+
+
+
+  {% else %}
+  <!-- Topbar -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-pink d-flex align-items-center">
+        <i class="fa fa-search me-2"></i> Search the designers
+      </button>
+    </div> -->
+    <!-- <button class="btn btn-danger rounded-pill px-4">Share Your Work</button> -->
+    <h4> Welcome..! <span style="color: #ff0080;">{{ user }}😊</span></h4>
+    <div class="d-flex align-items-center gap-4">
+
+    <div class="position-relative">
+      <a href="{% url 'all_messages' %}">
+        <i class="fa fa-bell fs-4"></i>
+        {% if unread_count > 0 %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{ unread_count }}
+        </span>
+        {% endif %}
+      </a>
+    </div>
+
+      <i class="fa fa-envelope fs-4"></i>
+
+{% if request.user.is_authenticated %}
+    <img src="{{ request.user.profile.profile_image.url }}" 
+         class="rounded-circle" width="40" height="40" alt="{{ request.user.username }}">
+{% else %}
+    <img src="{% static 'images/profile.jpg' %}" 
+         class="rounded-circle" width="40" height="40" alt="Default Profile">
+{% endif %}
+
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+<div class="row g-5 justify-content-center">
+  <div class="col-md-3">
+    <div class="stat-card text-center p-3 border rounded shadow-sm">
+      <p class="fw-bold">Total Projects</p>
+      <h3>{{ total_projects }}</h3>
+      <small class="text-success">Total Projects Submission</small>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="stat-card text-center p-3 border rounded shadow-sm">
+      <p class="fw-bold">Notifications</p>
+      <h3>{{ total_notifications }}</h3>
+      <small class="text-info">Recent Messages & Alerts</small>
+    </div>
+  </div>
+</div>
+
+
+
+  <div class="container py-5">
+    <div class="row g-4">
+
+     <!-- Upload New Project -->
+<div class="col-lg-8">
+  <div class="card-custom p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="mb-0 fw-bold">Upload New Project</h5>
+    </div>
+
+    <!-- Form -->
+   <form method="POST" enctype="multipart/form-data" id="projectForm">
+  {% csrf_token %}
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Project Title</label>
+      <input type="text" name="title" class="form-control" placeholder="Enter project title" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Category</label>
+      <select name="category" class="form-select" required>
+        <option value="Web Design">Web Design</option>
+        <option value="Mobile App">Mobile App</option>
+        <option value="Branding">Branding</option>
+      </select>
+    </div>
+
+    <div class="col-md-12">
+      <label class="form-label">Project Images</label>
+      <div class="upload-box mb-2" id="uploadBox" style="cursor:pointer; border:2px dashed #ccc; padding:20px; text-align:center;">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <p class="mb-1">Drop your files here</p>
+        <p class="text-muted small">or click to browse</p>
+      </div>
+      <input type="file" name="images" id="fileInput" class="d-none" multiple required>
+      <div id="fileList" class="mt-2"></div>
+    </div>
+
+    <div class="col-md-12">
+      <label class="form-label">Description</label>
+      <textarea name="description" class="form-control" placeholder="Describe your project, inspiration, and process..."></textarea>
+    </div>
+
+    <div class="col-md-12">
+      <label class="form-label">Tags (comma-separated)</label>
+      <input type="text" name="tags" class="form-control" placeholder="UI Design, Mobile App, Minimalist">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Visibility</label>
+      <select name="visibility" class="form-select">
+        <option value="Public">Public</option>
+        <option value="Private">Private</option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">License</label>
+      <select name="license" class="form-select">
+        <option value="All Rights Reserved">All Rights Reserved</option>
+        <option value="Creative Commons">Creative Commons</option>
+        <option value="MIT">MIT</option>
+      </select>
+    </div>
+
+    <div class="col-md-4 d-flex align-items-center">
+      <div class="form-check mt-3">
+        <input type="checkbox" name="allow_downloads" class="form-check-input" id="allowDownloads">
+        <label class="form-check-label" for="allowDownloads">Allow Downloads</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex justify-content-between">
+    <button type="submit" class="btn btn-warning">Save as Draft</button>
+    <button type="submit" class="btn btn-pink">Publish Project</button>
+  </div>
+</form>
+  </div>
+</div>
+
+      <!-- Recent Messages -->
+<div class="col-lg-4">
+  <div class="messages-card p-3 mb-4 shadow-sm rounded-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="fw-bold mb-0">Recent Messages</h6>
+      <a href="{% url 'all_messages' %}" class="text-decoration-none text-pink fw-semibold">View All</a>
+    </div>
+
+    {% for msg in recent_messages %}
+    <div class="d-flex align-items-start mb-2">
+      <!-- <img src="{{ msg.sender.profile.profile_image.url }}" class="avatar me-2 rounded-circle" width="40" height="40"> -->
+      <div>
+      <div class="fw-semibold">{{ msg.sender.username }}</div>
+      <div class="text-muted small">{{ msg.content|truncatechars:50 }}</div>
+      <div class="text-muted small">{{ msg.created_at|naturaltime }}</div>
+      </div>
+    </div>
+    {% empty %}
+      <p class="text-muted">No messages yet.</p>
+    {% endfor %}
+  </div>
+</div>
+
+
+      
+      <!-- Show Uploaded Projects -->
+    <!-- <div class="mt-5">
+      <h4>Your Uploaded Projects</h4>
+      <div class="row">
+        {% for p in projects %}
+          <div class="col-md-4">
+            <div class="card mb-3">
+              <img src="{{ p.image.url }}" class="card-img-top" alt="Project">
+              <div class="card-body">
+                <h5 class="card-title">{{ p.title }}</h5>
+                <p class="card-text"><strong>Category:</strong> {{ p.category }}</p>
+                <p class="card-text"><small class="text-muted">Uploaded on {{ p.created_at }}</small></p>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <p>No projects uploaded yet.</p>
+        {% endfor %}
+      </div>
+    </div> -->
+
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock content %}
+
+
+
+{% block script %}
+
+{% if show_profile_alert %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Show alert if profile is incomplete
+    const goToProfile = confirm("⚠️ Please fill your profile form to continue. Click OK to go to your profile.");
+    if (goToProfile) {
+        window.location.href = "{% url 'edit_profile' %}";
+    }
+});
+</script>
+{% endif %}
+
+
+
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const uploadBox = document.getElementById('uploadBox');
+  const fileList = document.getElementById('fileList');
+
+  uploadBox.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', updateFileList);
+
+  uploadBox.addEventListener('dragover', (e) => { e.preventDefault(); uploadBox.style.borderColor = '#ff69b4'; });
+  uploadBox.addEventListener('dragleave', (e) => { e.preventDefault(); uploadBox.style.borderColor = '#ccc'; });
+  uploadBox.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileInput.files = e.dataTransfer.files;
+    updateFileList();
+    uploadBox.style.borderColor = '#ccc';
+  });
+
+  function updateFileList() {
+    const files = Array.from(fileInput.files);
+    fileList.innerHTML = files.map(f => `<div>${f.name}</div>`).join('');
+  } 
+</script>
+
+{% endblock script %}

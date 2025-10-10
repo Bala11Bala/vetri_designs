@@ -1,0 +1,227 @@
+{% extends 'myapp/layouts/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+
+
+/* Main Content */
+.main-content {
+    width: 75%;
+    margin-left: 22%;
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+}
+
+/* Header Bar */
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-info img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+}
+
+.profile-details h4 {
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.profile-details h6 {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+/* Buttons */
+.btns .hire-now-btn {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.btns .hire-now-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Project Preview */
+.project-preview {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.project-content h4 {
+    font-size: 1.5rem;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.project-content p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Project Image */
+.project-preview img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .btns {
+        width: 100%;
+    }
+
+    .btns .hire-now-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-info img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .project-preview img {
+        max-height: 250px;
+    }
+}
+</style>
+{% endblock extra_css %}
+
+{% block title %}
+{{ project.title }} | Portfolio
+{% endblock title %}
+
+{% block content %}
+<div class="main-content">
+
+    <div class="header-bar">
+        <div class="profile-info">
+            <img src="{{ student.profile_image.url }}" alt="Profile">
+            <div class="profile-details">
+                <h4>{{ project.title }}</h4>
+                <h6>{{ student.first_name }} {{ student.last_name }}</h6>
+            </div>
+        </div>
+<div class="btns d-flex align-items-center gap-3">
+  <button id="like-btn" class="btn btn-outline-primary">
+    <i class="fa-solid fa-hands-clapping"></i>
+    <span id="like-text">{% if is_liked %}Liked{% else %}Like{% endif %}</span>
+  </button>
+
+  <!-- <span id="like-count" class="fw-bold text-secondary">
+    {{ like_count }} Appreciations
+  </span> -->
+
+  {% if request.user.is_superuser %}
+    <a href="{% url 'hire_now' project.id %}" class="hire-now-btn">Hire Now</a>
+  {% endif %}
+</div>
+
+
+    </div>
+
+    <div class="project-preview">
+        <div class="project-content">
+            <h4>{{ project.title }}</h4>
+            <p>{{ project.description }}</p>
+        </div>
+
+<div class="project-images">
+  {% if project.images.all %}
+    {% for img in project.images.all %}
+      <div class="mb-3">
+        <img src="{{ img.image.url }}" alt="{{ project.title }}" 
+             class="img-fluid rounded shadow-sm w-100" 
+             style="object-fit: cover;">
+      </div>
+    {% endfor %}
+  {% else %}
+    <img src="{% static 'img/placeholder.png' %}" 
+         alt="No image available" 
+         class="img-fluid rounded shadow-sm w-100" 
+         style="object-fit: cover;">
+  {% endif %}
+</div>
+
+
+
+        <footer>
+            <p>© {{ student.first_name }} {{ student.last_name }} | Powered by Portfolio</p>
+        </footer>
+    </div>
+
+</div>
+{% endblock content %}
+
+
+
+{% block script %}
+<script>
+document.getElementById("like-btn").addEventListener("click", function() {
+    fetch("", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "action=like"
+    })
+    .then(response => response.json())
+    .then(data => {
+        const likeText = document.getElementById("like-text");
+        const likeCount = document.getElementById("like-count");
+        likeText.textContent = data.liked ? "Liked" : "Like";
+        likeCount.textContent = data.like_count + " Appreciations";
+    });
+});
+</script>
+{% endblock script %}
+
+

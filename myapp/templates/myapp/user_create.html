@@ -1,0 +1,80 @@
+{% extends 'myapp/layouts/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+
+  .create-card {
+    max-width: 450px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .create-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+  }
+
+  .create-card h2 {
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #343a40;
+  }
+
+  .form-label {
+    font-weight: 500;
+  }
+
+  .btn-success {
+    background: linear-gradient(90deg, #4CAF50, #2E7D32);
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(90deg, #45a049, #1b5e20);
+  }
+
+  @media (max-width: 576px) {
+    .create-card {
+      margin: 30px 15px;
+      padding: 20px;
+    }
+  }
+</style>
+{% endblock extra_css %}
+
+{% block title %}
+Create Student Account
+{% endblock title %}
+
+{% block content %}
+<div class="create-card">
+  <h2 class="text-center">Create Student Account</h2>
+
+  {% for message in messages %}
+    <div class="alert alert-info">{{ message }}</div>
+  {% endfor %}
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+    </div>
+    <button type="submit" class="btn btn-success w-100">Create Student</button>
+  </form>
+</div>
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}

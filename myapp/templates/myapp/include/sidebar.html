@@ -1,0 +1,82 @@
+{% load static %}
+{% block extra_css %}
+
+{% endblock extra_css %}
+
+
+{% block title %}
+
+ {% endblock title %}
+
+{% block content %}
+<!-- Toggle Button -->
+<div class="toggle-btn" onclick="toggleSidebar()">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+  
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="close-btn" onclick="toggleSidebar()">
+      <i class="fa-solid fa-xmark"></i>
+    </div>
+  
+    <div class="logo d-flex">
+      <a href="{% url 'dashboard' %}"><img src="{% static 'images/vts companies logo.jpg' %}" alt="Logo" style="border-radius: 50%;"/></a>
+      <h2>VETRI DESIGNS</h2>
+    </div>
+
+
+      <a href="{% url 'dashboard' %}"><div class="menu-item {% if request.resolver_match.url_name == '#' %}active{% endif %}">
+      <i class="fa-solid fa-house-user"></i> <span>Overview</span></div></a>
+
+      <a href="{% url 'my_projects' %}">
+        <div class="menu-item {% if request.resolver_match.url_name == 'my_projects' %}active{% endif %}">
+          <i class="fa-solid fa-upload"></i> <span>Projects</span>
+        </div>
+      </a>
+
+{% if user.is_superuser %}
+    <!-- Only visible to Admin -->
+    <a href="{% url 'create_student' %}">
+      <div class="menu-item {% if request.resolver_match.url_name == 'create_student' %}active{% endif %}">
+        <i class="fa-solid fa-file"></i> 
+        <span>Create User</span>
+      </div>
+    </a>
+{% else %}
+    <!-- Only visible to Student -->
+    <a href="{% url 'edit_profile' %}">
+      <div class="menu-item {% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+        <i class="fa-solid fa-file"></i> <span>Student Profile</span>
+      </div>
+    </a>
+{% endif %}
+
+
+
+  <a href="{% url 'logout' %}">
+  <button type="submit" class="logout" style="border: none; background: none; cursor: pointer; color: white;">
+    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+    <span>Logout</span>
+  </button></a>
+
+
+  </div>
+  
+<!-- 
+  <div class="main-content" style="margin-left: 250px;">
+    <h1>Welcome to the Dashboard</h1>
+    <p>Your main content goes here.</p>
+  </div> -->
+{% endblock content %}
+
+
+{% block script %}
+<script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("open");
+    }
+  </script>
+  
+{% endblock script %}

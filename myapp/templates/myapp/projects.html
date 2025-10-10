@@ -1,0 +1,98 @@
+{% extends 'myapp/layouts/base.html' %}
+{% load static %}
+
+{% block title %}Designers Showcase{% endblock title %}
+
+{% block content %}
+<div class="container py-4" style="margin-left:21%; padding:20px;">
+  <h4 class="fw-bold mb-4">Designers Showcase</h4>
+
+
+  <!-- 🔍 FILTER BAR -->
+  <form method="get" class="mb-4">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-3">
+        <input type="text" name="name" value="{{ search_name }}" class="form-control" placeholder="Filter by Student Name">
+      </div>
+      <div class="col-md-3">
+        <input type="text" name="project" value="{{ search_project }}" class="form-control" placeholder="Filter by Project Title">
+      </div>
+    <div class="col-md-3">
+      <input type="number" min="1" name="recent_days" value="{{ recent_days }}" class="form-control" placeholder="Last N days">
+    </div>
+
+      <div class="col-md-3">
+        <button type="submit" class="btn w-100 text-white" style="background: linear-gradient(270deg, #FFA44B, #FF0488 );">
+          Apply Filters 🔍
+        </button>
+
+      </div>
+      <a href="{% url 'my_projects' %}" class="btn btn-outline-secondary btn-sm mt-2" style="width: 250px; margin: auto; background-color: #FF0488; color: white;">Clear Filters</a>
+
+    </div>
+  </form>
+
+
+
+  <div class="row g-4">
+    {% for student, projects in student_projects.items %}
+      {% if projects %}
+        <div class="col-md-4">
+          <div class="card shadow-sm rounded-4 overflow-hidden position-relative project-card"
+               style="cursor:pointer;border: 1px solid #e6006e;"
+               onclick="window.location.href='{% url 'view_student_projects' student.id %}'">
+            
+            {% if projects.0.images.first %}
+              <img src="{{ projects.0.images.first.image.url }}" class="w-100" style="height:220px; object-fit:cover;">
+            {% else %}
+              <div style="height:220px; background:#ddd;"></div>
+            {% endif %}
+
+            <div class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-white text-center p-3"
+                 style="background:rgba(0,0,0,0.6); opacity:0; transition:0.3s;">
+              <h6 class="fw-bold mb-2">{{ projects.0.title }}</h6>
+              <p class="small">{{ projects.0.description|truncatechars:100 }}</p>
+            </div>
+
+            <div class="p-3 text-center" style="background: linear-gradient(270deg, #FFA44B, #FF0488 );">
+              <img src="{{ student.profile_image.url }}" class="rounded-circle border border-3 border-white mb-2" width="60" height="60">
+              <h6 class="fw-bold mb-0 text-white">{{ student.first_name }} {{ student.last_name }}</h6>
+              <p class="small text-light mb-1">{{ student.location }}</p>
+            </div>
+          <!-- <div class="d-flex justify-content-around mb-3 text-center">
+            <div>
+              <p class="small mb-1">Appreciation</p>
+              <i class="fa-solid fa-hands-clapping" style="color: rgb(61, 156, 156); font-size: 20px;"></i>
+              <h6>{{ student.appreciation }}</h6>
+            </div>
+            <div>
+              <p class="small mb-1">Projects Views</p>
+              <i class="fa-solid fa-eye" style="color: blue;font-size: 20px;"></i>
+              <h6>{{ student.project_views }}</h6>
+            </div>
+            <div>
+              <p class="small mb-1">Likes</p>
+              <i class="fa-solid fa-heart" style="color: #fe1e1e;font-size: 20px;"></i>   
+              <h6>{{ student.followers }}</h6>
+            </div> 
+          </div>-->
+          
+            <div class="btn mt-2" style="background: linear-gradient(270deg, #FFA44B, #FF0488 ); width: 250px; margin: auto;"> Show Profile </div>
+
+            <!-- <div class="d-flex justify-content-center p-2 bg-white">
+              {% for p in projects %}
+                {% if p.images.first %}
+                  <img src="{{ p.images.first.image.url }}" class="rounded me-1" width="50" height="50" style="object-fit:cover;">
+                {% endif %}
+              {% endfor %}
+            </div> -->
+
+          </div>
+        </div>
+      {% endif %}
+    {% empty %}
+      <p class="text-center">No students found.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}

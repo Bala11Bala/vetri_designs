@@ -1,0 +1,135 @@
+{% extends 'myapp/layouts/base.html' %}
+{% load static %}
+
+{% block title %}
+{{ student.first_name }} {{ student.last_name }} — Projects
+{% endblock title %}
+
+{% block extra_css %}
+<style>
+  /* Card hover effect */
+  .card img {
+    transition: transform 0.3s ease;
+  }
+  .card:hover img {
+    transform: scale(1.05);
+  }
+
+  /* Overlay for project cards */
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #e6006e;
+    transition: transform 0.3s ease;
+  }
+  .project-card:hover {
+    transform: scale(1.02);
+  }
+  .project-card .overlay {
+    position: absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    transition: 0.3s;
+  }
+  .project-card:hover .overlay {
+    opacity: 1;
+  }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="container py-4" style="margin-left:21%; padding:20px;">
+
+  <!-- Student Card -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="p-3 text-center" style="background:linear-gradient(90deg,#ff5f6d,#ffc371); color:white;">
+          {% if student.profile_image %}
+            <img src="{{ student.profile_image.url }}" class="rounded-circle border border-3 border-white mb-2" width="100" height="100">
+          {% else %}
+            <div class="rounded-circle border border-3 border-white mb-2" style="width:100px; height:100px; background:#fff;"></div>
+          {% endif %}
+          <h5 class="fw-bold mb-0">{{ student.first_name }} {{ student.last_name }}</h5>
+          <p class="small mb-2 text-light">{{ student.location }}</p>
+        </div>
+        <div class="p-3 text-center">
+          <div class="d-flex justify-content-around mb-3">
+
+          <div class="text-center ">
+            <p class="small mb-1">Appreciation</p>
+            <i class="fa-solid fa-hands-clapping" style="color: rgb(61, 156, 156); font-size: 22px;"></i>
+            <h6 class="mt-1 text-dark">{{ profile.appreciation_count }}</h6>
+          </div>
+
+
+            <div>
+              <p class="small mb-1">Likes</p>
+              <i class="fa-solid fa-heart" style="color: #fe1e1e;font-size: 20px;"></i>   
+              <h6 class="mt-1 text-dark">{{ total_likes }}</h6>
+            </div>
+            <div class="text-center">
+                <p class="small mb-1">Projects Views</p>
+                <i class="fa-solid fa-eye" style="color: blue;font-size: 20px;"></i>
+                <h6 class="mt-1 text-dark">{{ total_views }}</h6>
+            </div>
+
+          </div>
+          <a href="{% url 'dashboard' %}" class="btn btn-gradient w-100">← Back to Showcase</a>
+        </div>
+      </div>
+    </div>  
+  </div>
+
+  <!-- Projects Section -->
+  <h4 class="fw-bold mb-4 text-center">Projects by {{ student.first_name }}</h4>
+
+  <div class="row g-4">
+    {% for project in projects %}
+      <div class="col-md-4">
+        <div class="project-card card shadow-sm rounded-4 overflow-hidden"
+             onclick="window.location.href='{% url 'project_detail' project.pk %}'">
+          
+          {% if project.images.first %}
+            <img src="{{ project.images.first.image.url }}" class="w-100" style="height:220px; object-fit:cover;">
+          {% else %}
+            <div style="height:220px; background:#ddd;"></div>
+          {% endif %}
+
+          <div class="overlay">
+            <h6 class="fw-bold mb-2">{{ project.title }}</h6>
+            <p class="small">{{ project.description|truncatechars:100 }}</p>
+          </div>
+
+          <div class="p-3">
+            <p class="text-muted small mb-2">{{ project.category }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge bg-light text-dark">{{ project.visibility }}</span>
+              <span class="small text-muted">{{ project.license }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-center">No projects uploaded by this student yet.</p>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+  // Optional: additional JS if needed
+</script>
+{% endblock script %}
